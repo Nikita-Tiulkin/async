@@ -34,7 +34,7 @@ run();
 function sendRequest(url) {
     return fetch(url).then(response => {
         if (!response.ok) {
-                alert(`Ошибка запроса: ${response.status} ${response.statusText} для URL: ${url}`);
+                alert(`Ошибка: ${response.status} ${response.statusText}`);
                 return null;
             }
             return response.json();

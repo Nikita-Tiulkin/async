@@ -11,20 +11,19 @@ async function run() {
     
     const ogrns = orgOgrns.join(",");
     
-    const requisites = await sendRequest(`${API.orgReqs}?ogrn=${ogrns}`);
-    if (!requisites) return;
+    const requisites = sendRequest(`${API.orgReqs}?ogrn=${ogrns}`);
+    const analytics = sendRequest(`${API.analytics}?ogrn=${ogrns}`);
+    const buh = sendRequest(`${API.buhForms}?ogrn=${ogrns}`);
+
+    const [requisitesRes, analyticsRes,buhRes] = await Promise.all([requisites, analytics, buh])
+
+    if(!(requisitesRes && analyticsRes && buhRes))
+        return;
+
+    const orgsMap = reqsToMap(requisitesRes);
     
-    const orgsMap = reqsToMap(requisites);
-    
-    const analytics = await sendRequest(`${API.analytics}?ogrn=${ogrns}`);
-    if (!analytics) return;
-    
-    addInOrgsMap(orgsMap, analytics, "analytics");
-    
-    const buh = await sendRequest(`${API.buhForms}?ogrn=${ogrns}`);
-    if (!buh) return;
-    
-    addInOrgsMap(orgsMap, buh, "buhForms");
+    addInOrgsMap(orgsMap, analyticsRes, "analytics");
+    addInOrgsMap(orgsMap, buhRes, "buhForms");
     
     render(orgsMap, orgOgrns);
 }
